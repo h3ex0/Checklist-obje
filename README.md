@@ -5,6 +5,11 @@ during a call. It's the companion to the [Obje objection playbook](https://githu
 same objection categories, used to make sure discovery actually happens and
 the rep is armed before objections show up.
 
+**Inbound calls only.** This covers calls the customer places in — there is
+no outbound dialing and no scheduled callbacks. If a caller asks to be called
+back, that's an objection to handle (see the Objection Playbook's "escape"
+responses), not a task to queue.
+
 ## What's in it
 
 Open `index.html` in a browser (or host it via GitHub Pages). It's one file,
@@ -18,7 +23,7 @@ no build step, no dependencies.
      to this customer (Neil Rackham's SPIN Selling).
    - **1c. BANT qualification snapshot** — Budget, Authority, Need, Timing,
      confirmed before you quote anything.
-2. **Sales Arsenal** — what the rep should have ready before dialing: price
+2. **Sales Arsenal** — what the rep should have ready before picking up: price
    sheet, competitor comparisons, contract terms in plain words, discount
    order, recap script.
 3. **Objection-Readiness, by Category** — a self-check against the same
@@ -34,10 +39,15 @@ no build step, no dependencies.
      signal to follow up, not a signal to move on. Built on three named
      negotiation techniques from Chris Voss's *Never Split the Difference*:
      mirroring, labeling, and calibrated questions. See below.
+4. **Call Notes** — a free-text box for this call: what the caller said,
+   what's outstanding, anything to pick up on if they call back in. Has a
+   **Hold — Save Note** button that saves immediately, plus autosave as you
+   type, so a note survives closing the tab or the whole site.
 
-Checkbox state is saved to the browser's local storage only (per device, per
-browser) — nothing is synced or shared. Use the "Reset checklist" button to
-clear it before a new call block.
+Checkbox state and the call note are both saved to the browser's local
+storage, but as two separate things — nothing is synced or shared off the
+device, and "Reset checklist" (which clears checkboxes) never touches a
+saved note. Use "Clear Note" for that instead.
 
 ## Conversation balance: don't accept short answers as real answers
 

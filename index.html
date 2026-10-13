@@ -47,6 +47,14 @@ li.item.done label{color:var(--muted);text-decoration:line-through}
 .toolbar{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 18px}
 button.btn{background:var(--panel2);border:1px solid var(--line);color:var(--ink);border-radius:8px;padding:8px 14px;font-size:13px;cursor:pointer}
 button.btn:hover{border-color:var(--gold)}
+button.btn.primary{border-color:var(--gold);color:var(--gold)}
+.notes-body{padding:16px 18px}
+.notes-area{width:100%;min-height:140px;background:var(--panel2);color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:10px 12px;font:inherit;font-size:14px;line-height:1.5;resize:vertical}
+.notes-area:focus{outline:none;border-color:var(--gold)}
+.notes-toolbar{display:flex;gap:8px;align-items:center;margin-top:10px;flex-wrap:wrap}
+.notes-status{font-size:12px;color:var(--muted)}
+.notes-status.saved{color:var(--ok)}
+.notes-note{display:block;font-size:12px;color:var(--muted);margin-top:8px}
 footer{max-width:860px;margin:0 auto;padding:0 16px 40px;color:var(--muted);font-size:12px}
 </style>
 </head>
@@ -54,7 +62,7 @@ footer{max-width:860px;margin:0 auto;padding:0 16px 40px;color:var(--muted);font
 <header>
   <div>
     <h1>Discovery &amp; Objection-Prep Checklist</h1>
-    <div class="sub">Pre-call discovery questions + sales arsenal readiness, mapped to the Objection Playbook</div>
+    <div class="sub">Pre-call discovery questions + sales arsenal readiness, mapped to the Objection Playbook — inbound calls only, no outbound callbacks</div>
   </div>
   <div class="progress-wrap">
     <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
@@ -114,7 +122,7 @@ footer{max-width:860px;margin:0 auto;padding:0 16px 40px;color:var(--muted);font
 
   <section class="section" data-section="arsenal">
     <div class="section-head">
-      <h2>2. Sales Arsenal — Have Ready Before Dialing</h2>
+      <h2>2. Sales Arsenal — Have Ready Before You Pick Up</h2>
       <span class="count"></span>
     </div>
     <ul class="items">
@@ -190,8 +198,23 @@ footer{max-width:860px;margin:0 auto;padding:0 16px 40px;color:var(--muted);font
       <li class="item"><input type="checkbox" id="b6"><label for="b6">After the call, check your own ratio — if you talked far more than they did on key questions, you were pitching, not discovering.</label></li>
     </ul>
   </section>
+
+  <section class="section" data-section="notes">
+    <div class="section-head">
+      <h2>4. Call Notes</h2>
+      <span class="count" id="notesStatus">No note saved yet</span>
+    </div>
+    <div class="notes-body">
+      <textarea class="notes-area" id="notesArea" placeholder="What this caller said, what's outstanding, anything to pick up on if they call back in — current provider, price they were quoted, objection you were mid-way through, promised callback details, etc."></textarea>
+      <div class="notes-toolbar">
+        <button class="btn primary" id="holdBtn">Hold — Save Note</button>
+        <button class="btn" id="clearNotesBtn">Clear Note</button>
+      </div>
+      <span class="notes-note">Saved to this browser only — it'll still be here next time you open this page on this device, even after closing the tab. It won't follow you to a different browser or device, and it's not shared with anyone else.</span>
+    </div>
+  </section>
 </main>
-<footer>Checkbox state is saved locally in this browser only. Use "Reset checklist" to clear it before a new call block.</footer>
+<footer>Checkbox state and call notes are saved locally in this browser only, separately from each other — "Reset checklist" clears checkboxes but never touches your saved note.</footer>
 <script>
 (function(){
   var STORE_KEY = "discovery-checklist-v1";
@@ -251,6 +274,50 @@ footer{max-width:860px;margin:0 auto;padding:0 16px 40px;color:var(--muted);font
 
   updateProgress();
   updateSectionCounts();
+
+  var NOTES_KEY = "discovery-call-notes-v1";
+  var notesArea = document.getElementById('notesArea');
+  var notesStatus = document.getElementById('notesStatus');
+  var notesSaveTimer = null;
+
+  function pad(n){ return (n < 10 ? '0' : '') + n; }
+  function timeNow(){ var d = new Date(); return pad(d.getHours()) + ':' + pad(d.getMinutes()); }
+
+  function loadNote(){
+    try { return localStorage.getItem(NOTES_KEY) || ""; } catch(e){ return ""; }
+  }
+  function saveNote(text){
+    try { localStorage.setItem(NOTES_KEY, text); return true; } catch(e){ return false; }
+  }
+  function setNotesStatus(text, saved){
+    notesStatus.textContent = text;
+    notesStatus.classList.toggle('saved', !!saved);
+  }
+
+  var savedNote = loadNote();
+  notesArea.value = savedNote;
+  setNotesStatus(savedNote ? ('Loaded saved note (' + timeNow() + ')') : 'No note saved yet', !!savedNote);
+
+  notesArea.addEventListener('input', function(){
+    setNotesStatus('Unsaved changes…', false);
+    clearTimeout(notesSaveTimer);
+    notesSaveTimer = setTimeout(function(){
+      if (saveNote(notesArea.value)) setNotesStatus('Autosaved ' + timeNow(), true);
+    }, 800);
+  });
+
+  document.getElementById('holdBtn').addEventListener('click', function(){
+    clearTimeout(notesSaveTimer);
+    var ok = saveNote(notesArea.value);
+    setNotesStatus(ok ? ('Saved on hold — ' + timeNow()) : 'Could not save (storage unavailable)', ok);
+  });
+
+  document.getElementById('clearNotesBtn').addEventListener('click', function(){
+    clearTimeout(notesSaveTimer);
+    notesArea.value = '';
+    saveNote('');
+    setNotesStatus('Note cleared', false);
+  });
 })();
 </script>
 </body>
