@@ -39,15 +39,33 @@ no build step, no dependencies.
      signal to follow up, not a signal to move on. Built on three named
      negotiation techniques from Chris Voss's *Never Split the Difference*:
      mirroring, labeling, and calibrated questions. See below.
-4. **Call Notes** — a free-text box for this call: what the caller said,
-   what's outstanding, anything to pick up on if they call back in. Has a
-   **Hold — Save Note** button that saves immediately, plus autosave as you
-   type, so a note survives closing the tab or the whole site.
+4. **Call Notes & Objection Quick-Reference Grid (password-protected)** — both
+   live behind a password prompt and aren't in the page at all until it's
+   entered correctly:
+   - **4a. Call Notes** — a free-text box for this call: what the caller
+     said, what's outstanding, anything to pick up on if they call back in.
+     Has a **Hold — Save Note** button that saves immediately, plus autosave
+     as you type, so a note survives closing the tab or the whole site.
+   - **4b. Objection Quick-Reference Grid** — one core response line per
+     objection category (open, info, money, price, product, trust, close),
+     for a fast glance mid-call without scrolling the whole checklist.
+
+The header shows the local time for a quick reference during a shift.
 
 Checkbox state and the call note are both saved to the browser's local
 storage, but as two separate things — nothing is synced or shared off the
 device, and "Reset checklist" (which clears checkboxes) never touches a
 saved note. Use "Clear Note" for that instead.
+
+### About the password gate
+
+The unlock is checked and held in this browser tab's session only (it
+re-locks the next time the page is opened, or immediately via "Lock again").
+This is a screen-privacy convenience, not real security — it's a static
+page with no backend, so the password and the gated text are both present
+in the page's source code and can be read by anyone who views source or
+opens dev tools. Don't put anything in here you wouldn't want someone
+determined enough to see; it only stops a casual glance at the screen.
 
 ## Conversation balance: don't accept short answers as real answers
 

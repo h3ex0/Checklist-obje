@@ -24,9 +24,10 @@
 }
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,"Segoe UI",Roboto,Arial,sans-serif;line-height:1.45}
-header{position:sticky;top:0;z-index:10;background:var(--panel);border-bottom:1px solid var(--line);padding:16px 20px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+header{position:sticky;top:0;z-index:10;background:var(--panel);border-bottom:1px solid var(--line);padding:16px 20px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
 header h1{font-size:18px;margin:0;letter-spacing:.02em}
 header .sub{color:var(--muted);font-size:12px;margin-top:2px}
+.clock{font-size:12.5px;color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap}
 .progress-wrap{min-width:160px}
 .progress-bar{height:8px;border-radius:5px;background:var(--line);overflow:hidden}
 .progress-fill{height:100%;background:linear-gradient(90deg,var(--gold),var(--red));width:0%;transition:width .2s}
@@ -55,6 +56,15 @@ button.btn.primary{border-color:var(--gold);color:var(--gold)}
 .notes-status{font-size:12px;color:var(--muted)}
 .notes-status.saved{color:var(--ok)}
 .notes-note{display:block;font-size:12px;color:var(--muted);margin-top:8px}
+.gate{max-width:320px;margin:10px auto 20px;text-align:center}
+.gate p{font-size:13px;color:var(--muted);margin:0 0 4px}
+.gate input[type=password]{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:8px;background:var(--panel2);color:var(--ink);font-size:16px;margin:10px 0;text-align:center}
+.gate .err{color:var(--red);font-size:12px;min-height:16px;margin-bottom:6px}
+.notes-sub{margin-bottom:22px}
+.notes-sub:last-of-type{margin-bottom:0}
+.notes-sub h3{font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);margin:0 0 10px}
+table.grid-table{width:100%;border-collapse:collapse;font-size:13.5px}
+table.grid-table th,table.grid-table td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top}
 footer{max-width:860px;margin:0 auto;padding:0 16px 40px;color:var(--muted);font-size:12px}
 </style>
 </head>
@@ -64,6 +74,7 @@ footer{max-width:860px;margin:0 auto;padding:0 16px 40px;color:var(--muted);font
     <h1>Discovery &amp; Objection-Prep Checklist</h1>
     <div class="sub">Pre-call discovery questions + sales arsenal readiness, mapped to the Objection Playbook — inbound calls only, no outbound callbacks</div>
   </div>
+  <span class="clock" id="localClock" title="Local time"></span>
   <div class="progress-wrap">
     <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
     <div class="progress-label" id="progressLabel">0 / 0 done</div>
@@ -199,22 +210,46 @@ footer{max-width:860px;margin:0 auto;padding:0 16px 40px;color:var(--muted);font
     </ul>
   </section>
 
-  <section class="section" data-section="notes">
+  <section class="section" data-section="protected">
     <div class="section-head">
-      <h2>4. Call Notes</h2>
-      <span class="count" id="notesStatus">No note saved yet</span>
+      <h2>4. Call Notes &amp; Objection Quick-Reference Grid 🔒</h2>
+      <span class="count" id="gateStatus">Locked</span>
     </div>
-    <div class="notes-body">
-      <textarea class="notes-area" id="notesArea" placeholder="What this caller said, what's outstanding, anything to pick up on if they call back in — current provider, price they were quoted, objection you were mid-way through, promised callback details, etc."></textarea>
+    <div class="notes-body" id="protectedBody"></div>
+  </section>
+
+  <template id="protectedTemplate">
+    <div class="notes-sub">
+      <h3>4a. Call Notes</h3>
+      <textarea class="notes-area" id="notesArea" placeholder="What this caller said, what's outstanding, anything to pick up on if they call back in — current provider, price they were quoted, objection you were mid-way through, etc."></textarea>
       <div class="notes-toolbar">
         <button class="btn primary" id="holdBtn">Hold — Save Note</button>
         <button class="btn" id="clearNotesBtn">Clear Note</button>
+        <span class="notes-status" id="noteSaveStatus"></span>
       </div>
       <span class="notes-note">Saved to this browser only — it'll still be here next time you open this page on this device, even after closing the tab. It won't follow you to a different browser or device, and it's not shared with anyone else.</span>
     </div>
-  </section>
+    <div class="notes-sub">
+      <h3>4b. Objection Quick-Reference Grid</h3>
+      <div class="tbl-wrap">
+        <table class="grid-table">
+          <thead><tr><th>Category</th><th>Core response line</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Open</strong></td><td>Give a reason plus a short timeframe, then ask permission to continue: "Fair enough if I grab a few details and give you the exact number — one minute?"</td></tr>
+            <tr><td><strong>Info</strong></td><td>Explain why you need it before they have to ask: "I need your name, address and date of birth to check what you qualify for — nothing happens without your okay."</td></tr>
+            <tr><td><strong>Money</strong></td><td>Separate the package decision from the payment-timing problem — find the real number and the real date, then solve the date.</td></tr>
+            <tr><td><strong>Price</strong></td><td>Don't argue the number — isolate what specifically feels too high, then show the full value over the term, not just the monthly figure.</td></tr>
+            <tr><td><strong>Product</strong></td><td>Confirm what they actually watch and need before defending features they never asked about.</td></tr>
+            <tr><td><strong>Trust</strong></td><td>Acknowledge the history, don't dismiss it: "A lot of people come to us after a bad experience elsewhere — here's specifically what's different."</td></tr>
+            <tr><td><strong>Close</strong></td><td>Isolate the real objection, then ask for the decision again — don't let a stall quietly become a goodbye.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <button class="btn" id="lockAgainBtn">Lock again</button>
+  </template>
 </main>
-<footer>Checkbox state and call notes are saved locally in this browser only, separately from each other — "Reset checklist" clears checkboxes but never touches your saved note.</footer>
+<footer>Checkbox state and call notes are saved locally in this browser only, separately from each other — "Reset checklist" clears checkboxes but never touches your saved note. Call Notes and the Objection Quick-Reference Grid are password-protected and re-lock each time you reopen this page.</footer>
 <script>
 (function(){
   var STORE_KEY = "discovery-checklist-v1";
@@ -249,6 +284,7 @@ footer{max-width:860px;margin:0 auto;padding:0 16px 40px;color:var(--muted);font
   function updateSectionCounts(){
     document.querySelectorAll('.section').forEach(function(sec){
       var items = sec.querySelectorAll('input[type=checkbox]');
+      if (!items.length) return;
       var done = Array.prototype.filter.call(items, function(cb){ return cb.checked; }).length;
       sec.querySelector('.count').textContent = done + ' / ' + items.length;
     });
@@ -275,49 +311,110 @@ footer{max-width:860px;margin:0 auto;padding:0 16px 40px;color:var(--muted);font
   updateProgress();
   updateSectionCounts();
 
-  var NOTES_KEY = "discovery-call-notes-v1";
-  var notesArea = document.getElementById('notesArea');
-  var notesStatus = document.getElementById('notesStatus');
-  var notesSaveTimer = null;
-
   function pad(n){ return (n < 10 ? '0' : '') + n; }
   function timeNow(){ var d = new Date(); return pad(d.getHours()) + ':' + pad(d.getMinutes()); }
 
-  function loadNote(){
-    try { return localStorage.getItem(NOTES_KEY) || ""; } catch(e){ return ""; }
+  /* ---- Password gate for Call Notes + Objection Grid ---- */
+  var GATE_PASSWORD = "Black@0712@Panther";
+  var GATE_KEY = "checklist-gate-unlocked";
+  var protectedBody = document.getElementById('protectedBody');
+  var protectedTemplate = document.getElementById('protectedTemplate');
+  var gateStatus = document.getElementById('gateStatus');
+
+  function gateUnlocked(){
+    try { return sessionStorage.getItem(GATE_KEY) === '1'; } catch(e){ return false; }
   }
-  function saveNote(text){
-    try { localStorage.setItem(NOTES_KEY, text); return true; } catch(e){ return false; }
+
+  function renderGate(){
+    if (!gateUnlocked()) {
+      gateStatus.textContent = 'Locked';
+      protectedBody.innerHTML =
+        '<div class="gate">' +
+        '<p>Enter the password to view call notes and the objection quick-reference grid.</p>' +
+        '<input type="password" id="gatePw" placeholder="Password" autocomplete="off">' +
+        '<div class="err" id="gateErr"></div>' +
+        '<button class="btn primary" id="gateUnlockBtn">Unlock</button>' +
+        '</div>';
+      document.getElementById('gateUnlockBtn').addEventListener('click', tryUnlock);
+      document.getElementById('gatePw').addEventListener('keydown', function(e){ if (e.key === 'Enter') tryUnlock(); });
+      return;
+    }
+    gateStatus.textContent = 'Unlocked';
+    protectedBody.innerHTML = '';
+    protectedBody.appendChild(protectedTemplate.content.cloneNode(true));
+    initNotes();
+    document.getElementById('lockAgainBtn').addEventListener('click', function(){
+      try { sessionStorage.removeItem(GATE_KEY); } catch(e){}
+      renderGate();
+    });
   }
-  function setNotesStatus(text, saved){
-    notesStatus.textContent = text;
-    notesStatus.classList.toggle('saved', !!saved);
+
+  function tryUnlock(){
+    var pwEl = document.getElementById('gatePw');
+    if (pwEl.value === GATE_PASSWORD) {
+      try { sessionStorage.setItem(GATE_KEY, '1'); } catch(e){}
+      renderGate();
+    } else {
+      document.getElementById('gateErr').textContent = 'Wrong password.';
+      pwEl.value = '';
+      pwEl.focus();
+    }
   }
 
-  var savedNote = loadNote();
-  notesArea.value = savedNote;
-  setNotesStatus(savedNote ? ('Loaded saved note (' + timeNow() + ')') : 'No note saved yet', !!savedNote);
+  /* ---- Call notes (only wired once unlocked and template is in the DOM) ---- */
+  function initNotes(){
+    var NOTES_KEY = "discovery-call-notes-v1";
+    var notesArea = document.getElementById('notesArea');
+    var noteSaveStatus = document.getElementById('noteSaveStatus');
+    var notesSaveTimer = null;
 
-  notesArea.addEventListener('input', function(){
-    setNotesStatus('Unsaved changes…', false);
-    clearTimeout(notesSaveTimer);
-    notesSaveTimer = setTimeout(function(){
-      if (saveNote(notesArea.value)) setNotesStatus('Autosaved ' + timeNow(), true);
-    }, 800);
-  });
+    function loadNote(){
+      try { return localStorage.getItem(NOTES_KEY) || ""; } catch(e){ return ""; }
+    }
+    function saveNote(text){
+      try { localStorage.setItem(NOTES_KEY, text); return true; } catch(e){ return false; }
+    }
+    function setNoteStatus(text, saved){
+      noteSaveStatus.textContent = text;
+      noteSaveStatus.classList.toggle('saved', !!saved);
+    }
 
-  document.getElementById('holdBtn').addEventListener('click', function(){
-    clearTimeout(notesSaveTimer);
-    var ok = saveNote(notesArea.value);
-    setNotesStatus(ok ? ('Saved on hold — ' + timeNow()) : 'Could not save (storage unavailable)', ok);
-  });
+    var savedNote = loadNote();
+    notesArea.value = savedNote;
+    setNoteStatus(savedNote ? ('Loaded saved note (' + timeNow() + ')') : 'No note saved yet', !!savedNote);
 
-  document.getElementById('clearNotesBtn').addEventListener('click', function(){
-    clearTimeout(notesSaveTimer);
-    notesArea.value = '';
-    saveNote('');
-    setNotesStatus('Note cleared', false);
-  });
+    notesArea.addEventListener('input', function(){
+      setNoteStatus('Unsaved changes…', false);
+      clearTimeout(notesSaveTimer);
+      notesSaveTimer = setTimeout(function(){
+        if (saveNote(notesArea.value)) setNoteStatus('Autosaved ' + timeNow(), true);
+      }, 800);
+    });
+
+    document.getElementById('holdBtn').addEventListener('click', function(){
+      clearTimeout(notesSaveTimer);
+      var ok = saveNote(notesArea.value);
+      setNoteStatus(ok ? ('Saved on hold — ' + timeNow()) : 'Could not save (storage unavailable)', ok);
+    });
+
+    document.getElementById('clearNotesBtn').addEventListener('click', function(){
+      clearTimeout(notesSaveTimer);
+      notesArea.value = '';
+      saveNote('');
+      setNoteStatus('Note cleared', false);
+    });
+  }
+
+  renderGate();
+
+  /* ---- Local time clock ---- */
+  function tickClock(){
+    var el = document.getElementById('localClock');
+    if (!el) return;
+    el.textContent = new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit', second:'2-digit'}) + ' local';
+  }
+  tickClock();
+  setInterval(tickClock, 1000);
 })();
 </script>
 </body>
